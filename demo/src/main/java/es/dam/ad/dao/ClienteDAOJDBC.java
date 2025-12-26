@@ -30,7 +30,10 @@ public class ClienteDAOJDBC implements ClienteDAO {
             }
 
         } catch (SQLException e) {
-            // TODO: tratar excepción como se indica en la teoría UD03 (log, mensaje, relanzar, etc.)
+            System.err.println("Error al conectar o realizar la consulta");
+            e.printStackTrace();
+
+            // Hecho: tratar excepción como se indica en la teoría UD03 (log, mensaje, relanzar, etc.)
             throw e;
         }
 
@@ -38,9 +41,35 @@ public class ClienteDAOJDBC implements ClienteDAO {
     }
 
     @Override
-    public Cliente findById(int id) throws Exception {
-        // TODO: implementar SELECT ... WHERE id = ?
-        return null;
+    public Cliente findById(int buscaId) throws Exception {
+        // Hecho: implementar SELECT ... WHERE id = ?
+        String sql = "SELECT id, nombre, email, saldo FROM clientes WHERE id=buscaId";
+        try (Connection con = ConexionBD.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()){
+                Cliente c = new Cliente(
+                rs.getInt("id"),
+                rs.getString("nombre"),
+                rs.getString("email"),
+                rs.getDouble("saldo")
+                );
+                    return c;}
+                else{
+                   return null;
+                }
+            
+        } catch (SQLException e) {
+            System.err.println("Error al conectar o realizar la consulta");
+            e.printStackTrace();
+
+            // Hecho: tratar excepción como se indica en la teoría UD03 (log, mensaje, relanzar, etc.)
+            throw e;
+            
+        }
+
+        
     }
 
     @Override

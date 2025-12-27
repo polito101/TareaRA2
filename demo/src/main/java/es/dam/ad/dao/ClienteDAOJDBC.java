@@ -6,8 +6,11 @@ import es.dam.ad.modelo.Cliente;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.*;
 
 public class ClienteDAOJDBC implements ClienteDAO {
+
+    private static final Logger logger = Logger.getLogger(ClienteDAO.class.getName());
 
     @Override
     public List<Cliente> findAll() throws Exception {
@@ -31,10 +34,12 @@ public class ClienteDAOJDBC implements ClienteDAO {
 
         } catch (SQLException e) {
             System.err.println("Error al conectar o realizar la consulta");
-            e.printStackTrace();
-
-            // Hecho: tratar excepción como se indica en la teoría UD03 (log, mensaje, relanzar, etc.)
-            throw e;
+            //registrar en el log el error
+            logger.severe("Error listando clientes "+ e.getMessage()); 
+            // 2. Enviar un mensaje más claro hacia arriba 
+            throw new Exception("No se pudo realizar la consulta", e);
+            
+            
         }
 
         return clientes;
@@ -62,11 +67,9 @@ public class ClienteDAOJDBC implements ClienteDAO {
             
         } catch (SQLException e) {
             System.err.println("Error al conectar o realizar la consulta");
-            e.printStackTrace();
-
-            // Hecho: tratar excepción como se indica en la teoría UD03 (log, mensaje, relanzar, etc.)
-            throw e;
-            
+            logger.severe("Error buscando cliente con ID " + buscaId + ": " + e.getMessage()); 
+            throw new Exception("No se pudo encontrar el cliente en la base de datos", e);
+                        
         }
 
         
@@ -76,15 +79,76 @@ public class ClienteDAOJDBC implements ClienteDAO {
     public void insert(Cliente cliente) throws Exception {
         // TODO: implementar INSERT con PreparedStatement
         // IMPORTANTE: revisar en la teoría el uso de parámetros (?) y evitar SQL Injection
+        String cnombre=cliente.getNombre();
+        String cemail=cliente.getEmail();
+        Double csaldo=cliente.getSaldo();
+        
+        String sql = "INSERT INTO CLIENTES (nombre, email, saldo) VALUES (?,?,?) ";
+                
+        try 
+            (Connection con = ConexionBD.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql) ) 
+            {
+            ps.setString(1,cnombre);
+            ps.setString(2,cemail);
+            ps.setDouble(3,csaldo);
+            ps.executeUpdate();
+           
+            
+        } catch (SQLException e) {
+            System.err.println("Error, no se ha podido insertar cliente");
+            logger.severe("Error, no se pudo insertar cliente" + e.getMessage()); 
+            throw new Exception("No se pudo insertar cliente en la base de datos", e);
+            
+        }
     }
 
     @Override
     public void update(Cliente cliente) throws Exception {
-        // TODO: implementar UPDATE por id
+        int cid=cliente.getId();
+        String cnombre=cliente.getNombre();
+        String cemail=cliente.getEmail();
+        Double csaldo=cliente.getSaldo();
+        String sql="UPDATE CLIENTES SET NOMBRE = ?, EMAIL = ?, SALDO = ? WHERE ID = ?";
+
+        try (
+            Connection con = ConexionBD.getConnection();
+            PreparedStatement ps=con.prepareStatement(sql))
+            {
+            ps.setString(1,cnombre);
+            ps.setString(2,cemail);
+            ps.setDouble(3,csaldo);
+            ps.setInt(4, cid);
+            ps.executeUpdate();
+           
+        }catch (SQLException e){
+            System.err.println("No se ha podido actualizar cliente");
+             logger.severe("Error, no se ha podido actualizar cliente con ID " + cid + ": " + e.getMessage()); 
+            throw new Exception("No se pudo actualizar el cliente en la base de datos", e);
+            
+        }
+    
     }
+    
+    
 
     @Override
-    public void delete(int id) throws Exception {
-        // TODO: implementar DELETE por id
+    public void delete(int cid) throws Exception {
+        // Hecho: implementar DELETE por id
+        String sql="DELETE FROM CLIENTES WHERE ID = ?";
+
+        try (
+            Connection con = ConexionBD.getConnection();
+            PreparedStatement ps=con.prepareStatement(sql))
+            {
+            ps.setInt(1, cid);
+            ps.executeUpdate();
+
+        }catch (SQLException e){
+            System.err.println("No se ha podido eliminar cliente");
+             logger.severe("Error, no se ha podido eliminar cliente con ID " + cid + ": " + e.getMessage()); 
+            throw new Exception("No se pudo eliminar el cliente en la base de datos", e);
+        }
+
     }
 }

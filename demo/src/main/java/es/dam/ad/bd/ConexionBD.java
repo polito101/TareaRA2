@@ -11,7 +11,7 @@ private static String url;
     private static String password;
     private static Properties properties = new Properties(); 
     static { 
-        try (InputStream input = ConnectionFactory.class
+        try (InputStream input = ConexionBD.class
              .getClassLoader() 
              .getResourceAsStream("db.properties")) {
                  if (input == null) { 
@@ -19,6 +19,10 @@ private static String url;
                  } 
                  // Cargar propiedades 
                  properties.load(input); 
+                 url=properties.getProperty("db.url");
+                 user=properties.getProperty("db.user");
+                 password=properties.getProperty("db.password");
+
                  // Inicializar driver JDBC (UD03 lo indica) 
                  String driver = properties.getProperty("db.driver"); 
                  Class.forName(driver); 
@@ -32,14 +36,8 @@ private static String url;
                     throw new RuntimeException("Error al cargar configuración de BD", e);
                  }
     }
-    public static String getUrl() { 
-        return properties.getProperty("db.url"); } 
-    public static String getUser() { 
-        return properties.getProperty("db.user"); }
-    public static String getPassword() { 
-        return properties.getProperty("db.password"); }
-
+        
     public static Connection getConnection() throws SQLException { 
-        return DriverManager.getConnection( getUrl(), getUser(), getPassword() ); }
+        return DriverManager.getConnection( url, user, password ); }
 }
 

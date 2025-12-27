@@ -57,24 +57,40 @@ public class MainJDBC {
                         System.out.print("Introduce el ID: "); 
                         id = sc.nextInt();
                         sc.nextLine(); // limpiar salto de línea 
-                        
-                            
-                            System.out.print("Introduce el nombre: "); 
+                        Cliente c=dao.findById(id);
+                        if (c!=null){
+                           System.out.println(c.toString());                     
+                            System.out.print("Introduce nuevo nombre: "); 
                             nombre = sc.nextLine(); 
-                            System.out.print("Introduce el email: "); 
+                            System.out.print("Introduce nuevo email: "); 
                             email = sc.nextLine(); 
-                            System.out.print("Introduce el saldo: "); 
+                            System.out.print("Introduce nuevo saldo: "); 
                             saldo = sc.nextDouble(); 
-                            Cliente nuevoCliente= new Cliente(nombre, email, saldo); 
-                            // utilizamos el constructor sin id para insertar en la BD
-                            dao.insert(nuevoCliente);
-                            // Hecho: pedir datos por teclado y llamar a dao.insert(...)
-                    
-
-                        // Hecho: pedir id, nuevos datos y llamar a dao.update(...)
+                            c.setEmail(email);
+                            c.setNombre(nombre);
+                            c.setSaldo(saldo);
+                            dao.update(c);
+                           }
+                        // Hecho: pedir id, mostramos los datos existentes,
+                        // solicitamos nuevos datos y llamar a dao.update(...)
                     }
                     case 4 -> {
-                        // TODO: pedir id y llamar a dao.delete(...)
+                        sc = new Scanner(System.in); 
+                        System.out.print("Introduce el ID: "); 
+                        id = sc.nextInt();
+                        sc.nextLine(); 
+                        Cliente c=dao.findById(id);
+                        if (c!=null){
+                            System.out.println(c.toString());
+                            System.out.print("¿Eliminar cliente? (S/N) "); 
+                            String sino = sc.nextLine();
+                                if(sino!="S"){
+                                   break;}
+                                   else {
+                                     dao.delete(id);
+                                    }
+                        }
+                        // Hecho: pedir id y llamar a dao.delete(...)
                     }
                     case 0 -> System.out.println("Saliendo...");
                     default -> System.out.println("Opción no válida.");

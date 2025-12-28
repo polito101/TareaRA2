@@ -48,36 +48,42 @@ public class ClienteDAOJDBC implements ClienteDAO {
     @Override
     public Cliente findById(int buscaId) throws Exception {
         // Hecho: implementar SELECT ... WHERE id = ?
-        String sql = "SELECT id, nombre, email, saldo FROM clientes WHERE id=buscaId";
+        String sql = "SELECT id, nombre, email, saldo FROM clientes WHERE id = ? ";
         try (Connection con = ConexionBD.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            if (rs.next()){
-                Cliente c = new Cliente(
-                rs.getInt("id"),
-                rs.getString("nombre"),
-                rs.getString("email"),
-                rs.getDouble("saldo")
-                );
-                    return c;}
-                else{
-                   return null;
+             PreparedStatement ps = con.prepareStatement(sql);)
+             {ps.setInt(1, buscaId); 
+             
+             try (ResultSet rs = ps.executeQuery()) {
+                              
+                if (rs.next()){
+                    Cliente c = new Cliente(
+                    rs.getInt("id"),
+                    rs.getString("nombre"),
+                    rs.getString("email"),
+                    rs.getDouble("saldo"));
+                    return c;
                 }
-            
+                return null;
+            } catch (SQLException e) {
+            System.err.println("Error al conectar o realizar la consulta");
+            logger.severe("Error buscando cliente con ID " + buscaId + ": " + e.getMessage()); 
+            throw new Exception("No se pudo encontrar el cliente en la base de datos", e);    
+            }
+
         } catch (SQLException e) {
             System.err.println("Error al conectar o realizar la consulta");
             logger.severe("Error buscando cliente con ID " + buscaId + ": " + e.getMessage()); 
             throw new Exception("No se pudo encontrar el cliente en la base de datos", e);
-                        
-        }
+        }                
+        
 
         
     }
 
+
     @Override
     public void insert(Cliente cliente) throws Exception {
-        // TODO: implementar INSERT con PreparedStatement
+        // Hecho: implementar INSERT con PreparedStatement
         // IMPORTANTE: revisar en la teoría el uso de parámetros (?) y evitar SQL Injection
         String cnombre=cliente.getNombre();
         String cemail=cliente.getEmail();

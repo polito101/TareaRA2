@@ -4,11 +4,14 @@ import es.dam.ad.dao.ClienteDAO;
 import es.dam.ad.dao.ClienteDAOJDBC;
 import es.dam.ad.modelo.Cliente;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class MainJDBC {
-
+    private static final Logger logger = Logger.getLogger(MainJDBC.class.getName());
+   
     public static void main(String[] args) {
         ClienteDAO dao = new ClienteDAOJDBC();
         Scanner sc = new Scanner(System.in);
@@ -17,7 +20,7 @@ public class MainJDBC {
         String nombre;
         String email;
         Double saldo;
-
+        
         do {
             System.out.println("=== Gestión de clientes (JDBC) ===");
             System.out.println("1. Listar clientes");
@@ -47,6 +50,7 @@ public class MainJDBC {
                         email = sc.nextLine(); 
                         System.out.print("Introduce el saldo: "); 
                         saldo = sc.nextDouble(); 
+                        sc.nextLine();
                         Cliente nuevoCliente= new Cliente(nombre, email, saldo); 
                         // utilizamos el constructor sin id para insertar en la BD
                         dao.insert(nuevoCliente);
@@ -55,8 +59,8 @@ public class MainJDBC {
                     case 3 -> {
                         sc = new Scanner(System.in); 
                         System.out.print("Introduce el ID: "); 
-                        id = sc.nextInt();
-                        sc.nextLine(); // limpiar salto de línea 
+                        id = Integer.parseInt(sc.nextLine());
+                        //sc.nextLine(); // limpiar salto de línea 
                         Cliente c=dao.findById(id);
                         if (c!=null){
                            System.out.println(c.toString());                     
@@ -66,6 +70,7 @@ public class MainJDBC {
                             email = sc.nextLine(); 
                             System.out.print("Introduce nuevo saldo: "); 
                             saldo = sc.nextDouble(); 
+                            sc.nextLine(); //para limpiar el buffer
                             c.setEmail(email);
                             c.setNombre(nombre);
                             c.setSaldo(saldo);
@@ -84,25 +89,34 @@ public class MainJDBC {
                             System.out.println(c.toString());
                             System.out.print("¿Eliminar cliente? (S/N) "); 
                             String sino = sc.nextLine();
-                                if(sino!="S"){
-                                   break;}
-                                   else {
-                                     dao.delete(id);
-                                    }
+                            if (sino.equalsIgnoreCase("S")) {
+                               dao.delete(id); 
+                            }
+                                                               
                         }
                         // Hecho: pedir id y llamar a dao.delete(...)
                     }
                     case 0 -> System.out.println("Saliendo...");
                     default -> System.out.println("Opción no válida.");
                 }
-            } catch (Exception e) {
-                // TODO: mostrar mensaje de error al usuario según las buenas prácticas vistas en teoría
+            } catch (IOException e) {
+                logger.severe("Error procesando la solicitud " + e.getMessage());
+                    // Hecho: mostrar mensaje de error al usuario según las buenas prácticas vistas en teoría
+            } catch(NumberFormatException e){
+                logger.severe("Error en formato de número "+ e.getMessage());
+
+            } catch(Exception e){
+                logger.severe("Error "+e.getMessage());
             }
+                   
+            
 
         } while (opcion != 0);
 
         sc.close();
+        
     }
 }
+
 
 

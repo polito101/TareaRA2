@@ -15,7 +15,7 @@ public class MainJDBC {
     public static void main(String[] args) {
         ClienteDAO dao = new ClienteDAOJDBC();
         Scanner sc = new Scanner(System.in);
-        int opcion;
+        int opcion=1;
         int id;
         String nombre;
         String email;
@@ -29,10 +29,10 @@ public class MainJDBC {
             System.out.println("4. Eliminar cliente");
             System.out.println("0. Salir");
             System.out.print("Opción: ");
-            opcion = Integer.parseInt(sc.nextLine());
-            
+                      
 
             try {
+                opcion = Integer.parseInt(sc.nextLine());
                 switch (opcion) {
                     case 1 -> {
                         List<Cliente> lista = dao.findAll();

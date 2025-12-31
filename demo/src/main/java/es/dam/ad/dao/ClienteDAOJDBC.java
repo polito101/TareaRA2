@@ -33,13 +33,10 @@ public class ClienteDAOJDBC implements ClienteDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Error al conectar o realizar la consulta");
-            //registrar en el log el error
+            //GESTION DE ERRORES
+            System.err.println("Error con la consulta");
             logger.severe("Error listando clientes "+ e.getMessage()); 
-            // 2. Enviar un mensaje más claro hacia arriba 
-            throw new Exception("No se pudo realizar la consulta", e);
-            
-            
+            throw new Exception("No se ha podido realizar la consulta", e);
         }
 
         return clientes;
@@ -47,7 +44,7 @@ public class ClienteDAOJDBC implements ClienteDAO {
 
     @Override
     public Cliente findById(int buscaId) throws Exception {
-        // Hecho: implementar SELECT ... WHERE id = ?
+        // BUSCAR CLIENTE POR ID
         String sql = "SELECT id, nombre, email, saldo FROM clientes WHERE id = ? ";
         try (Connection con = ConexionBD.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);)
@@ -66,25 +63,21 @@ public class ClienteDAOJDBC implements ClienteDAO {
                 return null;
             } catch (SQLException e) {
             System.err.println("Error al conectar o realizar la consulta");
-            logger.severe("Error buscando cliente con ID " + buscaId + ": " + e.getMessage()); 
-            throw new Exception("No se pudo encontrar el cliente en la base de datos", e);    
+            logger.severe("Error buscando al cliente con ID " + buscaId + ": " + e.getMessage()); 
+            throw new Exception("No se ha encontrado el cliente", e);    
             }
 
         } catch (SQLException e) {
             System.err.println("Error al conectar o realizar la consulta");
-            logger.severe("Error buscando cliente con ID " + buscaId + ": " + e.getMessage()); 
-            throw new Exception("No se pudo encontrar el cliente en la base de datos", e);
+            logger.severe("Error buscando al cliente con ID " + buscaId + ": " + e.getMessage()); 
+            throw new Exception("No se ha encontrado el cliente", e);
         }                
-        
-
-        
     }
 
 
     @Override
     public void insert(Cliente cliente) throws Exception {
-        // Hecho: implementar INSERT con PreparedStatement
-        // IMPORTANTE: revisar en la teoría el uso de parámetros (?) y evitar SQL Injection
+        // IMPLEMENTACIÓN DE INSERT CON preparedStatement
         String cnombre=cliente.getNombre();
         String cemail=cliente.getEmail();
         Double csaldo=cliente.getSaldo();
@@ -104,7 +97,7 @@ public class ClienteDAOJDBC implements ClienteDAO {
         } catch (SQLException e) {
             System.err.println("Error, no se ha podido insertar cliente");
             logger.severe("Error, no se pudo insertar cliente" + e.getMessage()); 
-            throw new Exception("No se pudo insertar cliente en la base de datos", e);
+            throw new Exception("No ha podido insertar el cliente", e);
             
         }
     }
@@ -130,17 +123,15 @@ public class ClienteDAOJDBC implements ClienteDAO {
         }catch (SQLException e){
             System.err.println("No se ha podido actualizar cliente");
              logger.severe("Error, no se ha podido actualizar cliente con ID " + cid + ": " + e.getMessage()); 
-            throw new Exception("No se pudo actualizar el cliente en la base de datos", e);
+            throw new Exception("No ha sido posible actualizar la bd", e);
             
         }
     
     }
     
-    
-
     @Override
     public void delete(int cid) throws Exception {
-        // Hecho: implementar DELETE por id
+        // IMPLEMENTACIÓN DE DELETE CON preparedStatement
         String sql="DELETE FROM CLIENTES WHERE ID = ?";
 
         try (
@@ -153,7 +144,7 @@ public class ClienteDAOJDBC implements ClienteDAO {
         }catch (SQLException e){
             System.err.println("No se ha podido eliminar cliente");
              logger.severe("Error, no se ha podido eliminar cliente con ID " + cid + ": " + e.getMessage()); 
-            throw new Exception("No se pudo eliminar el cliente en la base de datos", e);
+            throw new Exception("No se ha podido eliminar cliente", e);
         }
 
     }

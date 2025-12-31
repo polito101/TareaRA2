@@ -15,7 +15,7 @@ public class Cliente {
         this.saldo = saldo;
     }
 
-    // Constructor sin id para INSERT
+    // CONSTURCTORI SIN ID PARA INSERTAR EN LA BD
     public Cliente(String nombre, String email, double saldo) {
         this.nombre=nombre;
         this.email=email;

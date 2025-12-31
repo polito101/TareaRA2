@@ -39,7 +39,7 @@ public class MainJDBC {
                         for(Cliente cli: lista) {
                             System.out.println(cli.toString());
                         }
-                        // Hecho: mostrar lista por consola
+                        // PRINT LISTA EN CONSOLA
 
                     }
                     case 2 -> {
@@ -52,15 +52,14 @@ public class MainJDBC {
                         saldo = sc.nextDouble(); 
                         sc.nextLine();
                         Cliente nuevoCliente= new Cliente(nombre, email, saldo); 
-                        // utilizamos el constructor sin id para insertar en la BD
+                        // CONSTRUCTOR SIN ID
                         dao.insert(nuevoCliente);
-                        // Hecho: pedir datos por teclado y llamar a dao.insert(...)
                     }
                     case 3 -> {
                         sc = new Scanner(System.in); 
                         System.out.print("Introduce el ID: "); 
                         id = Integer.parseInt(sc.nextLine());
-                        //sc.nextLine(); // limpiar salto de línea 
+                       
                         Cliente c=dao.findById(id);
                         if (c!=null){
                            System.out.println(c.toString());                     
@@ -70,14 +69,13 @@ public class MainJDBC {
                             email = sc.nextLine(); 
                             System.out.print("Introduce nuevo saldo: "); 
                             saldo = sc.nextDouble(); 
-                            sc.nextLine(); //para limpiar el buffer
+                            sc.nextLine();
                             c.setEmail(email);
                             c.setNombre(nombre);
                             c.setSaldo(saldo);
                             dao.update(c);
                            }
-                        // Hecho: pedir id, mostramos los datos existentes,
-                        // solicitamos nuevos datos y llamar a dao.update(...)
+                        // pedir id, buscar cliente, pedir nuevos datos y llamar a dao.update(...)
                     }
                     case 4 -> {
                         sc = new Scanner(System.in); 
@@ -94,17 +92,16 @@ public class MainJDBC {
                             }
                                                                
                         }
-                        // Hecho: pedir id y llamar a dao.delete(...)
+                        // Petición id y llamar a dao.delete(...)
                     }
                     case 0 -> System.out.println("Saliendo...");
                     default -> System.out.println("Opción no válida.");
                 }
+                // Manejo de excepciones
             } catch (IOException e) {
                 logger.severe("Error procesando la solicitud " + e.getMessage());
-                    // Hecho: mostrar mensaje de error al usuario según las buenas prácticas vistas en teoría
             } catch(NumberFormatException e){
                 logger.severe("Error en formato de número "+ e.getMessage());
-
             } catch(Exception e){
                 logger.severe("Error "+e.getMessage());
             }

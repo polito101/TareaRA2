@@ -17,21 +17,16 @@ private static String url;
                  if (input == null) { 
                     throw new RuntimeException("No se encontró db.properties en resources");
                  } 
-                 // Cargar propiedades 
+                 // CARGA DE PROPIEDADES 
                  properties.load(input); 
                  url=properties.getProperty("db.url");
                  user=properties.getProperty("db.user");
                  password=properties.getProperty("db.password");
 
-                 // Inicializar driver JDBC (UD03 lo indica) 
+                 // Inicializar driver JDBC (INDICADO EN UD03) 
                  String driver = properties.getProperty("db.driver"); 
                  Class.forName(driver); 
-                 // Si quisieras inicializar un pool de conexiones, aquí iría 
-                 // // Ejemplo (HikariCP): // HikariConfig config = new HikariConfig(); 
-                 // // config.setJdbcUrl(properties.getProperty("db.url")); 
-                 // // config.setUsername(properties.getProperty("db.user")); 
-                 // // config.setPassword(properties.getProperty("db.password")); 
-                 // // dataSource = new HikariDataSource(config); 
+                 // AQUÍ SE INCIALIZARIA POSIBLE POOL DE CONEXIONES
                  } catch (Exception e) { 
                     throw new RuntimeException("Error al cargar configuración de BD", e);
                  }
